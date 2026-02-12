@@ -40,7 +40,14 @@ netlify dev
 - (اختياري) `ADMIN_USERNAME`, `ADMIN_PASSWORD` أو `ADMIN_SEED_KEY`
 - (اختياري) `APP_BASE_URL`
 
-4) شغّل `npm run db:setup` مرة واحدة على جهازك (أو عبر أي بيئة Node لديك) مع نفس `DATABASE_URL` لإنشاء الجداول في Neon.
+4) أنشئ الجداول في Neon (مرة واحدة):
+- الأسهل: افتح Neon → **SQL Editor** والصق محتوى `db/schema.sql` ثم Run.
+- أو محليًا: `npm run db:setup` (يتطلب `DATABASE_URL`).
+
+
+> **مهم جدًا:** ربط Neon بـ Netlify (Integration) لا ينشئ الجداول تلقائيًا.
+> لازم تنفّذ ملف `db/schema.sql` **مرة واحدة** داخل Neon (SQL Editor) أو عبر `npm run db:setup`.
+
 
 ## المسارات
 - `/` الرئيسية
