@@ -5,7 +5,7 @@ import { applyTemplate, buildVars } from "./_template.mjs";
 export const handler = async (event) => {
   const q = getQuery(event);
   const date = getRiyadhDate(q.date);
-  const splat = (q.path || "").replace(/^\/+/,""); // e.g. "83923"
+  const splat = getSplat(event, q, "ambassador"); // e.g. "83923"
   const parts = splat.split("/").filter(Boolean);
 
   if (!parts[0]) return badRequest("Missing numsafer");
@@ -98,6 +98,17 @@ export const handler = async (event) => {
     });
   });
 };
+
+function getSplat(event, q, fnName){
+  const qp = String(q.path || "").replace(/^\/+/, "");
+  if (qp && qp !== ":splat") return qp;
+  let pathname = "";
+  try { pathname = new URL(event.rawUrl).pathname || ""; } catch { pathname = event.path || ""; }
+  pathname = String(pathname || "");
+  pathname = pathname.replace(new RegExp(`^/\\.netlify/functions/${fnName}/?`), "");
+  pathname = pathname.replace(new RegExp(`^/api/${fnName}/?`), "");
+  return pathname.replace(/^\/+/, "");
+}
 
 async function getAmbassador(c, numsafer){
   const r = await c.query(`SELECT id, numsafer, name, phone, referral_code, branch_id, vars FROM ambassadors WHERE numsafer=$1`, [numsafer]);

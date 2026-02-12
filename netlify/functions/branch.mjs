@@ -4,7 +4,7 @@ import { json, badRequest, notFound, methodNotAllowed, getQuery, getRiyadhDate }
 export const handler = async (event) => {
   const q = getQuery(event);
   const date = getRiyadhDate(q.date);
-  const splat = (q.path || "").replace(/^\/+/,"");
+  const splat = getSplat(event, q, "branch");
   const parts = splat.split("/").filter(Boolean);
   if (!parts[0]) return badRequest("Missing numfre");
   if (event.httpMethod !== "GET") return methodNotAllowed();
@@ -34,6 +34,18 @@ export const handler = async (event) => {
     });
   });
 };
+
+function getSplat(event, q, fnName){
+  const qp = String(q.path || "").replace(/^\/+/, "");
+  if (qp && qp !== ":splat") return qp;
+  let pathname = "";
+  try { pathname = new URL(event.rawUrl).pathname || ""; } catch { pathname = event.path || ""; }
+  pathname = String(pathname || "");
+  pathname = pathname.replace(new RegExp(`^/\\.netlify/functions/${fnName}/?`), "");
+  pathname = pathname.replace(new RegExp(`^/api/${fnName}/?`), "");
+  return pathname.replace(/^\/+/, "");
+}
+
 
 async function getBranch(c, numfre){
   const r = await c.query(`SELECT id, numfre, name, vars FROM branches WHERE numfre=$1`, [numfre]);

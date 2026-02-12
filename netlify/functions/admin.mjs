@@ -5,7 +5,7 @@ import { parseCsv, validateDonations, validateBoxes } from "./_csv.mjs";
 
 export const handler = async (event) => {
   const q = getQuery(event);
-  const path = (q.path || "").replace(/^\/+/,""); // e.g. "login" OR "ambassadors/1"
+  const path = getSplat(event, q, "admin"); // e.g. "login" OR "ambassadors/1"
   const parts = path.split("/").filter(Boolean);
 
   // login is public
@@ -136,6 +136,17 @@ export const handler = async (event) => {
 
   return notFound("Unknown admin endpoint");
 };
+
+function getSplat(event, q, fnName){
+  const qp = String(q.path || "").replace(/^\/+/, "");
+  if (qp && qp !== ":splat") return qp;
+  let pathname = "";
+  try { pathname = new URL(event.rawUrl).pathname || ""; } catch { pathname = event.path || ""; }
+  pathname = String(pathname || "");
+  pathname = pathname.replace(new RegExp(`^/\\.netlify/functions/${fnName}/?`), "");
+  pathname = pathname.replace(new RegExp(`^/api/${fnName}/?`), "");
+  return pathname.replace(/^\/+/, "");
+}
 
 // --- CRUD implementations ---
 function ambassadorsCrud(event, id){

@@ -12,22 +12,22 @@
 # API redirects
 [[redirects]]
   from = "/api/public/*"
-  to = "/.netlify/functions/public?path=:splat"
+  to = "/.netlify/functions/public/:splat"
   status = 200
 
 [[redirects]]
   from = "/api/ambassador/*"
-  to = "/.netlify/functions/ambassador?path=:splat"
+  to = "/.netlify/functions/ambassador/:splat"
   status = 200
 
 [[redirects]]
   from = "/api/branch/*"
-  to = "/.netlify/functions/branch?path=:splat"
+  to = "/.netlify/functions/branch/:splat"
   status = 200
 
 [[redirects]]
   from = "/api/admin/*"
-  to = "/.netlify/functions/admin?path=:splat"
+  to = "/.netlify/functions/admin/:splat"
   status = 200
 
 # SPA fallback

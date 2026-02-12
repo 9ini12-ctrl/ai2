@@ -5,7 +5,7 @@ import { applyTemplate, buildVars } from "./_template.mjs";
 export const handler = async (event) => {
   const q = getQuery(event);
   const date = getRiyadhDate(q.date);
-  const path = (q.path || "").replace(/^\/+/,"");
+  const path = getSplat(event, q, "public");
 
   if (event.httpMethod !== "GET") return json(405, { error:"Method Not Allowed" });
 
@@ -76,6 +76,17 @@ export const handler = async (event) => {
 
   return json(404, { error:"Unknown public endpoint" });
 };
+
+function getSplat(event, q, fnName){
+  const qp = String(q.path || "").replace(/^\/+/, "");
+  if (qp && qp !== ":splat") return qp;
+  let pathname = "";
+  try { pathname = new URL(event.rawUrl).pathname || ""; } catch { pathname = event.path || ""; }
+  pathname = String(pathname || "");
+  pathname = pathname.replace(new RegExp(`^/\\.netlify/functions/${fnName}/?`), "");
+  pathname = pathname.replace(new RegExp(`^/api/${fnName}/?`), "");
+  return pathname.replace(/^\/+/, "");
+}
 
 async function getMessage(c, date){
   const r = await c.query(`SELECT id, share_title, image_url, text_template FROM messages WHERE date=$1::date`, [date]);
