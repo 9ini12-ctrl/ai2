@@ -1,0 +1,53 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 5173
+  port = 8888
+  functions = "netlify/functions"
+
+# API redirects
+[[redirects]]
+  from = "/api/public/*"
+  to = "/.netlify/functions/public?path=:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/ambassador/*"
+  to = "/.netlify/functions/ambassador?path=:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/branch/*"
+  to = "/.netlify/functions/branch?path=:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/*"
+  to = "/.netlify/functions/admin?path=:splat"
+  status = 200
+
+# SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/safer/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/fre/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/cpadmin"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
