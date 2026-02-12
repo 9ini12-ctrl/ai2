@@ -426,7 +426,3 @@ function plansBrCrud(event, id){
   }
   return methodNotAllowed();
 }
-
-function methodNotAllowed(){
-  return json(405, { error:"Method Not Allowed" });
-}
